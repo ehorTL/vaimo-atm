@@ -4,10 +4,11 @@ namespace App\Models\Bank;
 
 class BankAccountNumber{
     private $iban;
+    private $ibanGenerator;
     private $holder; // owner
 
     function __construct(IBANGenerator $ibanGenerator){
-//        $this->iban = $ibanGenerator->generate();
+        $this->ibanGenerator = $ibanGenerator;
     }
 
     public function getIban(){

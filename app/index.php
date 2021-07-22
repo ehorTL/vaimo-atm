@@ -6,10 +6,18 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
-use App\Models\Bank\IbanGeneratorImpl;
+use App\Models\User\User;
+use App\Models\User\Gender;
 
-$g = new IbanGeneratorImpl();
-print $g->generate();
+$users = array();
+$user1 = new User('Alice', 'Smith', Gender::MALE, [],[], null);
+$user2 = new User('Bob', 'Brown', Gender::FEMALE, [], [], null);
+$users[] = $user1;
+$users[] = $user2;
+
+//print_r($user1);
+//print_r($user2);
+//print_r($users);
 
 
 
