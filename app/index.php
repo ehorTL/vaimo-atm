@@ -67,6 +67,7 @@ $atm = new Atm($bank, "", $banknoteCassettes);
 print_r($atm->getAvailableBanknotesNominals());
 print_r($atm->totalBanknotesSum());
 print_r($atm->partition(74900, CurrencyEnum::UAH));
+print_r($atm->canExtract(79910, CurrencyEnum::UAH));
 
 
 

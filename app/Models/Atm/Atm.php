@@ -5,6 +5,7 @@ namespace App\Models\Atm;
 use App\Models\Atm\Abstr\AtmAbstract;
 use App\Models\Currency\CurrencyEnum;
 use App\Models\Bank\Abstr\BankAbstract;
+use App\Models\Bank\Abstr\PaymentCardAbstract;
 
 /**
  * Each action must be authorized, so each method gets card and pincode as arguments.
@@ -19,7 +20,16 @@ class Atm extends AtmAbstract {
         $this->address = $address;
     }
 
-    public function execTransactionToCard($card, $pincode, $sum, $toCard){
+    public function authorizeUser($card, $pincode){
+        if (!$card->pinCodeIsValid($pincode)){
+            throw new \Exception('Pincode is not valid. Access denied');
+        }
+
+        return true;
+    }
+
+
+    public function execTransactionToCard(PaymentCardAbstract $card, $pincode, $sum, $toCard){
 
     }
 
@@ -31,25 +41,53 @@ class Atm extends AtmAbstract {
 
     }
 
-    public function getBalance($card, $pincode, $sum){}
+    public function getBalance(PaymentCardAbstract $card, $pincode){
+        $this->authorizeUser($card, $pincode);
 
-    public function withdraw($card, $pincode, $sum){}
+        return $card->getCardBalance();
+    }
+
+    public function withdraw(PaymentCardAbstract $card, $pincode, $sum, $currency){
+        $this->authorizeUser($card, $pincode);
+
+        $canExtract = $this->canExtract($sum, $currency);
+        if ($canExtract[0]){
+            if ($currency === $card->getBankAccountNumber()->getCurrency()){
+                if ($card->getBankAccountNumber()->canWriteOff($sum)){
+                    $card->getBankAccountNumber()->writeOff($sum, $currency);
+                    // todo extract from cassettes
+                    return $canExtract[1];
+                }
+            } else {
+                $writeOffSum = $this->bank->calculateExchange($sum,
+                    $currency, $card->getBankAccountNumber()->getCurrency());
+                if ($card->getBankAccountNumber()->canWriteOff($writeOffSum)){
+                    $card->getBankAccountNumber()->writeOff($sum, $card->getBankAccountNumber()->getCurrency());
+                    // todo extract from cassettes
+                    return $canExtract[1];
+                }
+            }
+        }
+
+        throw new \Exception('Withdrawal cannot be executed.');
+    }
 
     /**
      * Solution should be as `Knapsack problem` solution, but here used another simple one.
      */
-    protected function canExtract($sum, $currency=CurrencyEnum::UAH){
+    public function canExtract($sum, $currency=CurrencyEnum::UAH){
         if ($this->totalBanknotesSum()[$currency] >= $sum){
-
-            $nominals = $this->getAvailableBanknotesNominals()[$currency];
-            // TODO
-
-            return true;
+            $partition = $this->partition($sum, $currency);
+            return [true, $partition];
         }
 
-        return false;
+        return [false, []];
     }
 
+    /**
+     * In case ATM has such a sum, calculates what banknotes the sum can be extracted.
+     * The sum is "rounded" so that it can be extracted with available banknotes.
+     */
     public function partition($sum, $currency){
         $sumInit = $sum;
         $nominalsAndQuantity = $this->getAvailableBanknotesNominals()[$currency];

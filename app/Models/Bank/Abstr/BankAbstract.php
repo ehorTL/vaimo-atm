@@ -2,6 +2,8 @@
 
 namespace App\Models\Bank\Abstr;
 
+use App\Models\Bank\BankAccountNumber;
+
 abstract class BankAbstract{
     protected $bankAccounts;
     protected $paymentCards;
@@ -15,4 +17,8 @@ abstract class BankAbstract{
      */
     protected $bankMainCurrency;
     protected $bankEquity;
+
+    public abstract function calculateExchange($sum, $currencyFrom, $currencyTo);
+    public abstract function execTransaction($sum, $currency, BankAccountNumber $fromAccount, BankAccountNumber $toAccount);
+    protected abstract function transfer($sum, $currency, BankAccountNumber $fromAccount, BankAccountNumber $toAccount);
 }
