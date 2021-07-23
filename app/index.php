@@ -16,6 +16,9 @@ use App\Models\Currency\CurrencyEnum;
 use App\Models\Bank\Bank;
 use App\Models\Currency\ExchangeUnit;
 
+use App\Models\Atm\BanknoteCassette;
+use App\Models\Atm\Atm;
+
 $users = array();
 $user1 = new User('Alice', 'Smith', Gender::MALE, [],[], null);
 $user2 = new User('Bob', 'Brown', Gender::FEMALE, [], [], null);
@@ -49,7 +52,19 @@ print $bank->calculateExchange(2730, CurrencyEnum::UAH, CurrencyEnum::USD);
 print PHP_EOL . $bank->calculateExchange(100, CurrencyEnum::USD, CurrencyEnum::UAH);
 print PHP_EOL . $bank->calculateExchange(10, CurrencyEnum::UAH, CurrencyEnum::RUB);
 
-use Carbon\Carbon;
 
-print PHP_EOL . Carbon::now();
+$banknoteCassettes = [
+    new BanknoteCassette(CurrencyEnum::UAH, 50, 500),
+    new BanknoteCassette(CurrencyEnum::UAH, 100, 200),
+    new BanknoteCassette(CurrencyEnum::UAH, 200, 100),
+    new BanknoteCassette(CurrencyEnum::UAH, 200, 150),
+    new BanknoteCassette(CurrencyEnum::UAH, 500, 50),
+    new BanknoteCassette(CurrencyEnum::USD, 10, 1000),
+];
+
+$atm = new Atm($bank, "", $banknoteCassettes);
+print_r($atm->getAvailableBanknotesNominals());
+print_r($atm->totalBanknotesSum());
+
+
 

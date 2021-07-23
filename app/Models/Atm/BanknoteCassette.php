@@ -6,6 +6,14 @@ class BanknoteCassette{
     protected $currency;
     protected $quantity;
     protected $nominalValue;
+//    protected $volume;
+
+    function __construct($currency, $nominalValue=0, $quantity=0) {
+        $this->currency = $currency;
+        $this->nominalValue = $nominalValue;
+        $this->quantity= $quantity;
+    }
+
 
     public function setCurrency($currency)
     {
