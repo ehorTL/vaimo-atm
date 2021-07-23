@@ -18,10 +18,6 @@ class Bank extends BankAbstract {
         $this->transactionsHistory = [];
     }
 
-    public function exchange($sum){
-
-    }
-
     public function calculateExchange($sum, $currencyFrom, $currencyTo){
         foreach ($this->exchangeRates as $exFrom => $units){
             if ($exFrom === $currencyFrom){
@@ -86,6 +82,17 @@ class Bank extends BankAbstract {
         }
 
         return false;
+    }
+
+    public function writeOff($sum, $currency, $transactionType,
+                             BankAccountNumber $fromAccount, BankAccountNumber $toAccount){
+        // writing off successfully done...
+        $transaction = new Transaction($transactionType, $sum, $currency);
+        $transaction->setTimestamp(Carbon::now());
+        $transaction->setFromBankAccount();
+        $transaction->setFromBankAccount($fromAccount);
+        $transaction->setToBankAccount($toAccount);
+        $this->transactionsHistory[] = $transaction;
     }
 
 }

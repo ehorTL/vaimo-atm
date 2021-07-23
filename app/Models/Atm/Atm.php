@@ -3,6 +3,7 @@
 namespace App\Models\Atm;
 
 use App\Models\Atm\Abstr\AtmAbstract;
+use App\Models\Bank\Transaction\TransactionType;
 use App\Models\Currency\CurrencyEnum;
 use App\Models\Bank\Abstr\BankAbstract;
 use App\Models\Bank\Abstr\PaymentCardAbstract;
@@ -28,17 +29,16 @@ class Atm extends AtmAbstract {
         return true;
     }
 
-
-    public function execTransactionToCard(PaymentCardAbstract $card, $pincode, $sum, $toCard){
-
+    public function execTransactionToCard(PaymentCardAbstract $card, $pincode, $sum, $currency,
+                                          PaymentCardAbstract $toCard){
+        $this->authorizeUser($card, $pincode);
+        return $this->bank->execTransaction($sum, $currency, $card->getBankAccountNumber(),
+            $toCard->getBankAccountNumber());
     }
 
-    public function execTransactionToAccount($card, $pincode, $sum, $toAccount){
-
-    }
-
-    protected function bankTransaction($card, $pincode, $toAccount){
-
+    public function execTransactionToAccount(PaymentCardAbstract $card, $pincode, $sum, $currency, $toAccount){
+        $this->authorizeUser($card, $pincode);
+        return $this->bank->execTransaction($sum, $currency, $card->getBankAccountNumber(), $toAccount);
     }
 
     public function getBalance(PaymentCardAbstract $card, $pincode){
@@ -55,7 +55,9 @@ class Atm extends AtmAbstract {
             if ($currency === $card->getBankAccountNumber()->getCurrency()){
                 if ($card->getBankAccountNumber()->canWriteOff($sum)){
                     $card->getBankAccountNumber()->writeOff($sum, $currency);
-                    // todo extract from cassettes
+                    $this->extract($currency, $canExtract[1]['partition']);
+                    $this->bank->writeOff($sum, $currency, TransactionType::WITHDRAWAL,
+                        $card->getBankAccountNumber(), null);
                     return $canExtract[1];
                 }
             } else {
@@ -63,7 +65,10 @@ class Atm extends AtmAbstract {
                     $currency, $card->getBankAccountNumber()->getCurrency());
                 if ($card->getBankAccountNumber()->canWriteOff($writeOffSum)){
                     $card->getBankAccountNumber()->writeOff($sum, $card->getBankAccountNumber()->getCurrency());
-                    // todo extract from cassettes
+                    $this->extract($card->getBankAccountNumber()->getCurrency(),
+                        $canExtract[1]['partition']);
+                    $this->bank->writeOff($sum, $currency, TransactionType::WITHDRAWAL,
+                        $card->getBankAccountNumber(), null);
                     return $canExtract[1];
                 }
             }
@@ -177,7 +182,6 @@ class Atm extends AtmAbstract {
             return ($a->getNominalValue() < $b->getNominalValue()) ? 1 : -1;
         });
 
-
         $partitionKeys = array_keys($partition);
         for ($partitionIndex=0; $partitionIndex<count($partitionKeys); $partitionIndex++){
             for ($i=0; $i<count($currencyCassettes); $i++){
@@ -190,7 +194,6 @@ class Atm extends AtmAbstract {
                 }
             }
         }
-
     }
 
 }
