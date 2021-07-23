@@ -41,14 +41,46 @@ class Atm extends AtmAbstract {
     protected function canExtract($sum, $currency=CurrencyEnum::UAH){
         if ($this->totalBanknotesSum()[$currency] >= $sum){
 
-            $nominals = $this->getAvailableBanknotesNominals();
+            $nominals = $this->getAvailableBanknotesNominals()[$currency];
             // TODO
+
             return true;
         }
 
         return false;
     }
 
+    public function partition($sum, $currency){
+        $sumInit = $sum;
+        $nominalsAndQuantity = $this->getAvailableBanknotesNominals()[$currency];
+        $nominals = array_keys($nominalsAndQuantity);
+        $partition = array();
+
+        $currentSum = 0;
+        $index = count($nominals) - 1;
+        while ($currentSum < $sumInit){
+            $remainder = $sum % $nominals[$index];
+            $banknotesNeeded = ($sum - $remainder) / $nominals[$index];
+            $partition[$nominals[$index]] = min($nominalsAndQuantity[$nominals[$index]], $banknotesNeeded);
+            $currentSum += $partition[$nominals[$index]] * $nominals[$index];
+            $sum = $sum - $partition[$nominals[$index]] * $nominals[$index];
+            $index--;
+
+            if ($index == -1 && $remainder != 0){
+                $partition[$nominals[0]] += 1;
+                $currentSum += $partition[$nominals[0]] * $nominals[0];
+            }
+        }
+
+        return ["controlSum" => $currentSum, 'partition' => $partition];
+    }
+
+    /**
+     * Returns array with such structure:
+     * [
+     *      currencyCode => [nominal_unique => total_quantity],
+     * ]
+     */
     public function getAvailableBanknotesNominals(){
         $nominals = array();
 
@@ -56,11 +88,18 @@ class Atm extends AtmAbstract {
             $nominals[$cassette->getCurrency()] = array();
         }
         foreach ($this->banknoteCassettes as $cassette){
-            $nominals[$cassette->getCurrency()][] = $cassette->getNominalValue();
+          if (isset($nominals[$cassette->getCurrency()][$cassette->getNominalValue()])){
+              $nominals[$cassette->getCurrency()][$cassette->getNominalValue()] +=
+                  $cassette->getQuantity();
+          } else {
+              $nominals[$cassette->getCurrency()][$cassette->getNominalValue()] =
+                  $cassette->getQuantity();
+          }
         }
 
-        foreach ($nominals as $key => $val){
-            $nominals[$key] = array_unique($val, SORT_NUMERIC);
+        $keys = array_keys($nominals);
+        foreach ($keys as $key) {
+            ksort($nominals[$key], SORT_NUMERIC);
         }
 
         return $nominals;
