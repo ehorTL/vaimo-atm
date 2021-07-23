@@ -2,7 +2,9 @@
 
 namespace App\Models\Atm;
 
-class Atm {
+use App\Models\Atm\Abstr\AtmAbstract;
+
+class Atm extends AtmAbstract {
     private $balance;
     private $bank;
 

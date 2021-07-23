@@ -2,15 +2,23 @@
 
 namespace App\Models\Bank;
 
-class PaymentCard{
+use App\Models\Bank\Contracts\PaymentCardInterface;
+use App\Models\User\User;
+
+class PaymentCard implements PaymentCardInterface {
     private $cardNumber;
     private $expirationDate;
     private $bankAccountNumber;
+    private $activated;
+
+    /**
+     * @var User
+     */
     private $cardHolder;
     private $pinCodeHash;
 
-    public function pinIsValid(string $pincode){
-        return $this->pinCodeHash === hash('md5', $pincode);
+    public function pinCodeIsValid($pinCode){
+        return $this->pinCodeHash === hash('md5', $pinCode);
     }
 
     function __construct(string $cardNumber, string $pincode){
