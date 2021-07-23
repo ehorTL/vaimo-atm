@@ -6,7 +6,9 @@
             "email": "e-dp@ukr.net"
         }
     ],
-    "require": {},
+    "require": {
+        "nesbot/carbon": "^2.50"
+    },
     "autoload": {
         "psr-4": {
             "App\\": "app/"

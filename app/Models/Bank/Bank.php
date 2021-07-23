@@ -3,9 +3,12 @@
 namespace App\Models\Bank;
 
 use App\Models\Bank\Abstr\BankAbstract;
+use App\Models\Bank\Transaction\Transaction;
+use App\Models\Bank\Transaction\TransactionType;
 use App\Models\Currency\CurrencyEnum;
 use App\Models\Bank\BankAccountNumber;
 use http\Exception;
+use Carbon\Carbon;
 
 class Bank extends BankAbstract {
     function __construct(array $exchangeRates){
@@ -44,7 +47,24 @@ class Bank extends BankAbstract {
         throw new \Exception('No such exchange');
     }
 
-    public function transfer($sum, $currency, BankAccountNumber $fromAccount, BankAccountNumber $toAccount){
+    public function execTransaction($sum, $currency, BankAccountNumber $fromAccount, BankAccountNumber $toAccount){
+        $success = $this->transfer($sum, $currency, $fromAccount, $toAccount);
+        if ($success){
+            $transaction = new Transaction(TransactionType::CUSTOMER_TRANSFER, $sum,
+                $currency);
+            $transaction->setFromBankAccount($fromAccount);
+            $transaction->setToBankAccount($toAccount);
+            $transaction->setTimestamp(Carbon::now());
+
+            $this->transactionsHistory[] = $transaction;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    protected function transfer($sum, $currency, BankAccountNumber $fromAccount, BankAccountNumber $toAccount){
         // TODO: some checks
 
         if ($currency !== $fromAccount->getCurrency()){

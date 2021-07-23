@@ -4,16 +4,33 @@ namespace App\Models\Atm;
 
 use App\Models\Atm\Abstr\AtmAbstract;
 
+/**
+ * Each action must be authorized, so each method gets card and pincode as arguments.
+ * There can also be saved card and user authorization status,
+ * but this is not the current implementation case.
+ */
 class Atm extends AtmAbstract {
-    private $balance;
-    private $bank;
-
-    function __construct(Bank $bank, $balance = 0)
+    function __construct(Bank $bank, $banknoteCassettes = [])
     {
         $this->bank = $bank;
+        $this->banknoteCassettes = $banknoteCassettes;
     }
 
-    private function bankTransaction(){}
-    public function getBalance(){}
-    public function withdraw(){}
+
+
+    public function execTransactionToCard($card, $pincode, $sum, $toCard){
+
+    }
+
+    public function execTransactionToAccount($card, $pincode, $sum, $toAccount){
+
+    }
+
+    protected function bankTransaction($card, $pincode, $toAccount){
+
+    }
+
+    public function getBalance($card, $pincode, $sum){}
+
+    public function withdraw($card, $pincode, $sum){}
 }

@@ -2,4 +2,7 @@
 
 namespace App\Models\Atm\Abstr;
 
-abstract class AtmAbstract{}
+abstract class AtmAbstract{
+    protected $bank;
+    protected $banknoteCassettes;
+}

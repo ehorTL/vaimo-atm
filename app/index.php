@@ -49,6 +49,7 @@ print $bank->calculateExchange(2730, CurrencyEnum::UAH, CurrencyEnum::USD);
 print PHP_EOL . $bank->calculateExchange(100, CurrencyEnum::USD, CurrencyEnum::UAH);
 print PHP_EOL . $bank->calculateExchange(10, CurrencyEnum::UAH, CurrencyEnum::RUB);
 
+use Carbon\Carbon;
 
-
+print PHP_EOL . Carbon::now();
 

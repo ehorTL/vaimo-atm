@@ -10,6 +10,7 @@ class Transaction{
     protected $toBankAccount;
     protected $currency;
     protected $transactionType;
+    protected $timestamp;
 
     function __construct(TransactionType $type, float $sum, $currency)
     {
@@ -55,5 +56,15 @@ class Transaction{
     public function getTransactionType()
     {
         return $this->transactionType;
+    }
+
+    public function setTimestamp($timestamp)
+    {
+        $this->timestamp = $timestamp;
+    }
+
+    public function getTimestamp()
+    {
+        return $this->timestamp;
     }
 }
