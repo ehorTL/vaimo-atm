@@ -43,7 +43,7 @@ abstract class PaymentCardAbstract{
         return [
             'balance' => $this->bankAccountNumber->getBalance(),
             'currencyInt' => $this->bankAccountNumber->getCurrency(),
-            'currencyCode' => CurrencyEnum::currencyToString($this->bankAccountNumber->getCurrency());
+            'currencyCode' => CurrencyEnum::currencyToString($this->bankAccountNumber->getCurrency())];
     }
 
     /**

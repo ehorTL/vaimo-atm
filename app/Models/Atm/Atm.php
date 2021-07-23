@@ -153,10 +153,7 @@ class Atm extends AtmAbstract {
         return $nominals;
     }
 
-    /**
-     * TODO: protected method
-     */
-    public function totalBanknotesSum(){
+    protected function totalBanknotesSum(){
         $currencySums = array();
         foreach ($this->banknoteCassettes as $cassette){
              if (isset($currencySums[$cassette->getCurrency()])){
@@ -209,5 +206,18 @@ class Atm extends AtmAbstract {
     public function forgotPinCode($card){
         // TODO: call to SMS-service method and try to generate
         // new pincode and send it by SMS to users phone number
+    }
+
+    public function getTransactionsHistory(PaymentCardAbstract $card, $pincode){
+        $this->authorizeUser($card, $pincode);
+
+        $history = array_filter($this->bank->getTransactionsHistory(),
+            function ($key, $val) use ($card) {
+                return $key->getFromBankAccount() === $card->getBankAccountNumber() ||
+                      $key->getToBankAccount() === $card->getBankAccountNumber();
+            },
+            ARRAY_FILTER_USE_BOTH);
+
+        return $history;
     }
 }

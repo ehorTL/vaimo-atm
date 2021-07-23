@@ -60,4 +60,6 @@ abstract class AtmAbstract{
     public abstract function withdraw(PaymentCardAbstract $card, $pincode, $sum, $currency);
     public abstract function changePinCode(PaymentCardAbstract $card, $oldPincode, $newPincode);
     public abstract function forgotPinCode($card);
+
+    public abstract function getTransactionsHistory(PaymentCardAbstract $card, $pincode);
 }

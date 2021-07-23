@@ -3,6 +3,7 @@
 namespace App\Models\Bank\Transaction;
 
 use App\Models\Bank\Transaction\TransactionType;
+use App\Models\Currency\CurrencyEnum;
 
 /**
  * Transaction describes any action with money.
@@ -17,7 +18,7 @@ class Transaction{
     protected $transactionType;
     protected $timestamp;
 
-    function __construct(TransactionType $type, float $sum, $currency)
+    function __construct($type, float $sum, $currency)
     {
         if ($sum < 0.0){
             throw new \Exception('Negative sum provided. Must be greater than 0.0');
@@ -71,5 +72,18 @@ class Transaction{
     public function getTimestamp()
     {
         return $this->timestamp;
+    }
+
+    public function __toString()
+    {
+        return
+            "TRANSACTION TYPE: " . TransactionType::transactionToString($this->transactionType) . PHP_EOL
+            ."SUM: " . $this->sum . PHP_EOL
+            ."CURRENCY: " . CurrencyEnum::currencyToString($this->currency) . PHP_EOL
+            ."FROM BANK ACCOUNT: " . (is_null($this->fromBankAccount) ? "NULL"
+                : $this->fromBankAccount->getIban()) . PHP_EOL
+            ."TO BANK ACCOUNT: " . (is_null($this->toBankAccount) ? "NULL"
+                : $this->toBankAccount->getIban()) . PHP_EOL
+            ."TIMESTAMP: " . $this->timestamp . PHP_EOL;
     }
 }

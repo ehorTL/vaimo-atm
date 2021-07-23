@@ -84,12 +84,10 @@ class Bank extends BankAbstract {
         return false;
     }
 
-    public function writeOff($sum, $currency, $transactionType,
-                             BankAccountNumber $fromAccount, BankAccountNumber $toAccount){
+    public function writeOff($sum, $currency, $transactionType, $fromAccount, $toAccount){
         // writing off successfully done...
         $transaction = new Transaction($transactionType, $sum, $currency);
         $transaction->setTimestamp(Carbon::now());
-        $transaction->setFromBankAccount();
         $transaction->setFromBankAccount($fromAccount);
         $transaction->setToBankAccount($toAccount);
         $this->transactionsHistory[] = $transaction;

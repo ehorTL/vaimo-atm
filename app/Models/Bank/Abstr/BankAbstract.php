@@ -34,6 +34,25 @@ abstract class BankAbstract{
     public abstract function calculateExchange($sum, $currencyFrom, $currencyTo);
     public abstract function execTransaction($sum, $currency, BankAccountNumber $fromAccount, BankAccountNumber $toAccount);
     protected abstract function transfer($sum, $currency, BankAccountNumber $fromAccount, BankAccountNumber $toAccount);
-    public abstract function writeOff($sum, $currency, $transactionType,
-                            BankAccountNumber $fromAccount, BankAccountNumber $toAccount);
+    public abstract function writeOff($sum, $currency, $transactionType, $fromAccount, $toAccount);
+
+    public function setBankAccounts($bankAccounts)
+    {
+        $this->bankAccounts = $bankAccounts;
+    }
+
+    public function setPaymentCards($paymentCards)
+    {
+        $this->paymentCards = $paymentCards;
+    }
+
+    public function setTransactionsHistory($transactionsHistory)
+    {
+        $this->transactionsHistory = $transactionsHistory;
+    }
+
+    public function getTransactionsHistory()
+    {
+        return $this->transactionsHistory;
+    }
 }

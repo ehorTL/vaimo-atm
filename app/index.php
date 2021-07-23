@@ -19,19 +19,34 @@ use App\Models\Currency\ExchangeUnit;
 use App\Models\Atm\BanknoteCassette;
 use App\Models\Atm\Atm;
 
-$users = array();
-$user1 = new User('Alice', 'Smith', Gender::MALE, [],[], null);
-$user2 = new User('Bob', 'Brown', Gender::FEMALE, [], [], null);
-$users[] = $user1;
-$users[] = $user2;
+use App\Models\Bank\PaymentCard;
 
+$users = [
+    new User('Alice', 'Smith', Gender::MALE, ['+1234567890'],['alice@gmail.com'], null),
+    new User('Bob', 'Brown', Gender::FEMALE, ['+2345678901'], ['bob@gmail.com'], null),
+    new User('Clara', 'Mae', Gender::FEMALE, ['+3456789012'], ['clara@gmail.com'], null)
+];
 
-$bn = new BankAccountNumber(new IbanGeneratorImpl(), "12/21", 100.0);
-print $bn ->getBalance();
-$bn->topUp(20, CurrencyEnum::USD);
-print PHP_EOL . $bn->getBalance();
-$bn->writeOff(90.0, CurrencyEnum::USD);
-print PHP_EOL . $bn->getBalance();
+$ban0 = new BankAccountNumber(new IbanGeneratorImpl(), "12/21", 1000.0, CurrencyEnum::UAH);
+$ban0->setOwner($users[0]);
+
+$ban1 = new BankAccountNumber(new IbanGeneratorImpl(), "12/21", 2000.0, CurrencyEnum::UAH);
+$ban0->setOwner($users[1]);
+
+$ban2 = new BankAccountNumber(new IbanGeneratorImpl(), "12/21", 30000.0, CurrencyEnum::UAH);
+$ban0->setOwner($users[2]);
+
+$bankAccounts = [$ban0, $ban1, $ban2];
+
+$crd0 = new PaymentCard('0000567812345678', '0000', '07/25');
+$crd0->setBankAccountNumber($ban0);
+$crd0->setCardHolder($users[0]);
+$crd1 = new PaymentCard('1111567812345678', '1111', '07/25');
+$crd1->setBankAccountNumber($ban1);
+$crd1->setCardHolder($users[1]);
+$crd2 = new PaymentCard('2222567812345678', '2222', '07/25');
+$crd2->setBankAccountNumber($ban2);
+$crd2->setCardHolder($users[2]);
 
 $exchangeRates = [
     CurrencyEnum::UAH => [
@@ -45,13 +60,9 @@ $exchangeRates = [
     ]
 ];
 
-print_r($exchangeRates[CurrencyEnum::USD]);
-
 $bank = new Bank($exchangeRates);
-print $bank->calculateExchange(2730, CurrencyEnum::UAH, CurrencyEnum::USD);
-print PHP_EOL . $bank->calculateExchange(100, CurrencyEnum::USD, CurrencyEnum::UAH);
-print PHP_EOL . $bank->calculateExchange(10, CurrencyEnum::UAH, CurrencyEnum::RUB);
-
+$bank->setBankAccounts($bankAccounts);
+$bank->setPaymentCards([$crd0, $crd1, $crd2]);
 
 $banknoteCassettes = [
     new BanknoteCassette(CurrencyEnum::UAH, 100, 200),
@@ -62,15 +73,23 @@ $banknoteCassettes = [
     new BanknoteCassette(CurrencyEnum::USD, 10, 1000),
 ];
 
-$atm = new Atm($bank, "", $banknoteCassettes);
-print_r($atm->getAvailableBanknotesNominals());
-print_r($atm->totalBanknotesSum());
-print_r($atm->partition(74900, CurrencyEnum::UAH));
-print_r($atm->canExtract(79910, CurrencyEnum::UAH));
+$atm = new Atm($bank, "ABC Street, 21", $banknoteCassettes);
 
-//print_r($atm->getBanknoteCassettes());
-print_r($atm->getAvailableBanknotesNominals());
-//$atm->extract(CurrencyEnum::UAH, [ 500 => 50, 200 => 250, 100 => 49, 50 => 1]);
-//print_r($atm->getBanknoteCassettes());
-print_r($atm->getAvailableBanknotesNominals());
+print_r($atm->getBalance($crd0, '0000'));
+print_r($atm->getBalance($crd1, '1111'));
+print_r($atm->getBalance($crd2, '2222'));
+print PHP_EOL;
+
+$atm->changePinCode($crd0, '0000', '0011');
+print ($crd0->pinCodeIsValid('0000') ? 'Pincode 0000 ok' : 'Pincode 0000 - error') . PHP_EOL;
+print ($crd0->pinCodeIsValid('0011') ? 'Pincode 0011 ok' : 'Pincode 0011 - error') . PHP_EOL;
+$atm->changePinCode($crd0, '0011', '0000');
+print ($crd0->pinCodeIsValid('0000') ? 'Pincode 0000 ok' : 'Pincode 0000 - error') . PHP_EOL;
+
+print_r($atm->withdraw($crd2, '2222', 26700, CurrencyEnum::UAH));
+print_r($atm->getBalance($crd2, '2222'));
+
+foreach ($atm->getTransactionsHistory($crd2, '2222') as $t){
+    print $t;
+}
 
