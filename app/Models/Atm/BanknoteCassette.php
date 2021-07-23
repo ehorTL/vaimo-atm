@@ -2,6 +2,15 @@
 
 namespace App\Models\Atm;
 
+/**
+ * Banknote cassette is a container to keep banknotes of the same nominal value.
+ * Cassettes are used in ATMs, it is where the money are stored.
+ * Cassettes are described by banknotes nominal, their quantity and currency (eg USD, EUR ets).
+ *
+ * Banknotes can be extracted from cassette or put into.
+ * Container can be empty.
+ * It is also describes by the sum it contains.
+ */
 class BanknoteCassette{
     protected $currency;
     protected $quantity;

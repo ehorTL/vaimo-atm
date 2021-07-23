@@ -70,7 +70,7 @@ print_r($atm->canExtract(79910, CurrencyEnum::UAH));
 
 //print_r($atm->getBanknoteCassettes());
 print_r($atm->getAvailableBanknotesNominals());
-$atm->extract(CurrencyEnum::UAH, [ 500 => 50, 200 => 250, 100 => 49, 50 => 1]);
+//$atm->extract(CurrencyEnum::UAH, [ 500 => 50, 200 => 250, 100 => 49, 50 => 1]);
 //print_r($atm->getBanknoteCassettes());
 print_r($atm->getAvailableBanknotesNominals());
 

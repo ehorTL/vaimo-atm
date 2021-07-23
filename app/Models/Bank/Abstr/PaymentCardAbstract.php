@@ -6,6 +6,17 @@ use App\Models\Bank\BankAccountNumber;
 use App\Models\Currency\CurrencyEnum;
 use App\Models\User\User;
 
+/**
+ * Abstract class for payment bank card description.
+ * It usually contains [16-digit] number, expiration date, card holder info.
+ * Card is secured by PIN-code.
+ * Card can be activate or not.
+ * Card cannot be used without bank account number where the money actually lies.
+ * Card holder and bank account number owner can differ.
+ * Moreover one bank account can have multiple cards (~users).
+ *
+ * Pincode is stored as its hash.
+ */
 abstract class PaymentCardAbstract{
     protected $cardNumber;
     protected $expirationDate;
@@ -50,5 +61,7 @@ abstract class PaymentCardAbstract{
     {
         return $this->bankAccountNumber;
     }
+
+    public abstract function setPinCode($pinCode);
 }
 

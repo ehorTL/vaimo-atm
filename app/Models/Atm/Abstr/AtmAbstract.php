@@ -2,6 +2,21 @@
 
 namespace App\Models\Atm\Abstr;
 
+use App\Models\Bank\Abstr\PaymentCardAbstract;
+
+/**
+ * Abstract class of ATM with basic methods declaration.
+ * ATM have to be bounded to bank, contain banknote cassettes inside,
+ * have address it is located at.
+ *
+ * The bank should be notified about all the operations the ATM performs
+ * (bank is provided as a service). Most of the ATM's methods calls are delegated to bank,
+ * where transactions are registered.
+ *
+ * Main function of the ATM is to give money out from its cassettes,
+ * calculate what banknotes they should be withdrawn, give an opportunity users to check
+ * balances on their cards, and make transfers from their accounts numbers to other
+ */
 abstract class AtmAbstract{
     protected $bank;
     protected $banknoteCassettes;
@@ -36,4 +51,13 @@ abstract class AtmAbstract{
     {
         $this->banknoteCassettes = $banknoteCassettes;
     }
+
+    public abstract function execTransactionToCard(PaymentCardAbstract $card, $pincode, $sum,
+                                                   $currency, PaymentCardAbstract $toCard);
+    public abstract function execTransactionToAccount(PaymentCardAbstract $card, $pincode,
+                                                      $sum, $currency, $toAccount);
+    public abstract function getBalance(PaymentCardAbstract $card, $pincode);
+    public abstract function withdraw(PaymentCardAbstract $card, $pincode, $sum, $currency);
+    public abstract function changePinCode(PaymentCardAbstract $card, $oldPincode, $newPincode);
+    public abstract function forgotPinCode($card);
 }

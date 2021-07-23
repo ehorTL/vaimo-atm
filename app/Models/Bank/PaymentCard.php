@@ -67,4 +67,8 @@ class PaymentCard extends PaymentCardAbstract {
     {
         return $this->cardHolder;
     }
+
+    public function setPinCode($pinCode){
+        $this->pinCodeHash = hash('md5', $pinCode);
+    }
 }

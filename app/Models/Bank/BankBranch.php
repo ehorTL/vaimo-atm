@@ -4,6 +4,10 @@ namespace App\Models\Bank;
 
 use App\Models\Bank\Abstr\BankAbstract;
 
+/**
+ * Bank branch is physical place where the bank department can be located.
+ * It has address and bank info.
+ */
 class BankBranch {
     protected $address;
     protected $bank;

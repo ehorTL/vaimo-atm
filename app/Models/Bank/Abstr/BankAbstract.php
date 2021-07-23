@@ -5,6 +5,13 @@ namespace App\Models\Bank\Abstr;
 use App\Models\Bank\BankAccountNumber;
 
 /**
+ * Bank store users bank accounts numbers (with money on them and other info),
+ * users that ever had accounts there,
+ * payment cards and transactions history.
+ * Bank also has some exchange rates and can exchange money for customers.
+ * Bank responsible for transfers and other operations with money on accounts.
+ *
+ *
  * Suppose bank has unlimited equity.
  * All the withdrawn money and other transactions are saved in transactions history.
  * Consider deposited and withdrawn money as some debentures to third party.

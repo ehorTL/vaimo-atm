@@ -6,6 +6,12 @@ use App\Models\Currency\CurrencyEnum;
 use App\Models\User\User;
 use App\Models\Bank\Contracts\IbanGenerator;
 
+
+/**
+ * Bank account store unique number (iban) and money on them (with currency),
+ * account owner info, registration date.
+ * Money can be put on account (top up) or written off (withwrawn or transferred).
+ */
 class BankAccountNumber{
     protected $iban;
     protected $ibanGenerator;

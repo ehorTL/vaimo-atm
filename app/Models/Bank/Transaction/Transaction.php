@@ -4,6 +4,11 @@ namespace App\Models\Bank\Transaction;
 
 use App\Models\Bank\Transaction\TransactionType;
 
+/**
+ * Transaction describes any action with money.
+ * Transaction is described by its type (withdrawal, transfer etc),
+ * time the action performed, information about where the money gone from and to.
+ */
 class Transaction{
     protected $sum;
     protected $fromBankAccount;

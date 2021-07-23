@@ -9,6 +9,11 @@ use App\Models\Bank\Abstr\BankAbstract;
 use App\Models\Bank\Abstr\PaymentCardAbstract;
 
 /**
+ * ATM implementation.
+ * Implements methods declared and described in its abstract parent class.
+ *
+ *
+ * ******
  * Each action must be authorized, so each method gets card and pincode as arguments.
  * There can also be saved card and user authorization status,
  * but this is not the current implementation case.
@@ -21,7 +26,7 @@ class Atm extends AtmAbstract {
         $this->address = $address;
     }
 
-    public function authorizeUser($card, $pincode){
+    protected function authorizeUser($card, $pincode){
         if (!$card->pinCodeIsValid($pincode)){
             throw new \Exception('Pincode is not valid. Access denied');
         }
@@ -167,9 +172,8 @@ class Atm extends AtmAbstract {
     /**
      * Assuming that such partition is available.
      * @param $partition array of the form [nominal_unique => quantity, ...]
-     * TODO: make method protected
      */
-    public function extract($currency, $partition){
+    protected function extract($currency, $partition){
         $currencyCassettes = array_filter($this->banknoteCassettes,
             function ($key, $val) use ($currency) {
                 return $key->getCurrency() === $currency;
@@ -196,4 +200,14 @@ class Atm extends AtmAbstract {
         }
     }
 
+    public function changePinCode(PaymentCardAbstract $card, $oldPincode, $newPincode){
+        $this->authorizeUser($card, $oldPincode);
+
+        $card->setPinCode($newPincode);
+    }
+
+    public function forgotPinCode($card){
+        // TODO: call to SMS-service method and try to generate
+        // new pincode and send it by SMS to users phone number
+    }
 }
