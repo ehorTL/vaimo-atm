@@ -53,7 +53,7 @@ class BanknoteCassette{
         return $this->getControlSum() - $sum >= 0.0;
     }
 
-    public function extract($sum){
+    public function extractSum($sum){
         if ($this->hasSum($sum)){
             $sumInt = intval($sum);
             if ($sumInt % $this->nominalValue == 0){
@@ -63,6 +63,15 @@ class BanknoteCassette{
         }
 
         return 0;
+    }
+
+    public function extractBanknotes($quantity){
+        if ($this->quantity >= $quantity){
+            $this->quantity -= $quantity;
+            return true;
+        }
+
+        return false;
     }
 
     public function addBanknotes($quantity){

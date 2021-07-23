@@ -54,7 +54,6 @@ print PHP_EOL . $bank->calculateExchange(10, CurrencyEnum::UAH, CurrencyEnum::RU
 
 
 $banknoteCassettes = [
-
     new BanknoteCassette(CurrencyEnum::UAH, 100, 200),
     new BanknoteCassette(CurrencyEnum::UAH, 50, 500),
     new BanknoteCassette(CurrencyEnum::UAH, 200, 100),
@@ -69,5 +68,9 @@ print_r($atm->totalBanknotesSum());
 print_r($atm->partition(74900, CurrencyEnum::UAH));
 print_r($atm->canExtract(79910, CurrencyEnum::UAH));
 
-
+//print_r($atm->getBanknoteCassettes());
+print_r($atm->getAvailableBanknotesNominals());
+$atm->extract(CurrencyEnum::UAH, [ 500 => 50, 200 => 250, 100 => 49, 50 => 1]);
+//print_r($atm->getBanknoteCassettes());
+print_r($atm->getAvailableBanknotesNominals());
 

@@ -159,4 +159,38 @@ class Atm extends AtmAbstract {
         return $currencySums;
     }
 
+    /**
+     * Assuming that such partition is available.
+     * @param $partition array of the form [nominal_unique => quantity, ...]
+     * TODO: make method protected
+     */
+    public function extract($currency, $partition){
+        $currencyCassettes = array_filter($this->banknoteCassettes,
+            function ($key, $val) use ($currency) {
+                return $key->getCurrency() === $currency;
+        }, ARRAY_FILTER_USE_BOTH);
+
+        usort($currencyCassettes, function($a, $b){
+            if ($a->getNominalValue() == $b->getNominalValue()){
+                return 0;
+            }
+            return ($a->getNominalValue() < $b->getNominalValue()) ? 1 : -1;
+        });
+
+
+        $partitionKeys = array_keys($partition);
+        for ($partitionIndex=0; $partitionIndex<count($partitionKeys); $partitionIndex++){
+            for ($i=0; $i<count($currencyCassettes); $i++){
+                if ($partitionKeys[$partitionIndex] ===
+                    $currencyCassettes[$i]->getNominalValue()){
+                    $banknotesToExtractQuantity = min($partition[$partitionKeys[$partitionIndex]],
+                        $currencyCassettes[$i]->getQuantity());
+                    $currencyCassettes[$i]->extractBanknotes($banknotesToExtractQuantity);
+                    $partition[$partitionKeys[$partitionIndex]] -= $banknotesToExtractQuantity;
+                }
+            }
+        }
+
+    }
+
 }
