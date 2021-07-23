@@ -35,6 +35,7 @@ $exchangeRates = [
         new ExchangeUnit(CurrencyEnum::USD, 27.1, 27.3),
         new ExchangeUnit(CurrencyEnum::EUR, 31.8, 32.4),
         new ExchangeUnit(CurrencyEnum::RUB, 0.35, 0.38),
+        new ExchangeUnit(CurrencyEnum::UAH, 1.0, 1.0),
     ],
     CurrencyEnum::USD => [
         new ExchangeUnit(CurrencyEnum::EUR, 1.172, 1.19),
@@ -46,6 +47,7 @@ print_r($exchangeRates[CurrencyEnum::USD]);
 $bank = new Bank($exchangeRates);
 print $bank->calculateExchange(2730, CurrencyEnum::UAH, CurrencyEnum::USD);
 print PHP_EOL . $bank->calculateExchange(100, CurrencyEnum::USD, CurrencyEnum::UAH);
+print PHP_EOL . $bank->calculateExchange(10, CurrencyEnum::UAH, CurrencyEnum::RUB);
 
 
 

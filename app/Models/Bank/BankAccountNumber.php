@@ -102,4 +102,11 @@ class BankAccountNumber{
 
         return $this->balance;
     }
+
+    /**
+     * Currency default in account property.
+     */
+    public function canWriteOff($sum){
+        return ($this->balance - $sum > 0.0);
+    }
 }
