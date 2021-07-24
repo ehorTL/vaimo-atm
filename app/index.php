@@ -28,13 +28,16 @@ $users = [
 ];
 
 $ban0 = new BankAccountNumber(new IbanGeneratorImpl(), "12/21", 1000.0, CurrencyEnum::UAH);
+$ban0->generateIban();
 $ban0->setOwner($users[0]);
 
 $ban1 = new BankAccountNumber(new IbanGeneratorImpl(), "12/21", 2000.0, CurrencyEnum::UAH);
-$ban0->setOwner($users[1]);
+$ban1->setOwner($users[1]);
+$ban1->generateIban();
 
 $ban2 = new BankAccountNumber(new IbanGeneratorImpl(), "12/21", 30000.0, CurrencyEnum::UAH);
-$ban0->setOwner($users[2]);
+$ban2->setOwner($users[2]);
+$ban2->generateIban();
 
 $bankAccounts = [$ban0, $ban1, $ban2];
 
@@ -90,6 +93,19 @@ print_r($atm->withdraw($crd2, '2222', 26700, CurrencyEnum::UAH));
 print_r($atm->getBalance($crd2, '2222'));
 
 foreach ($atm->getTransactionsHistory($crd2, '2222') as $t){
+    print $t;
+}
+
+$atm->execTransactionToCard($crd2, '2222', 250, CurrencyEnum::UAH, $crd0);
+print_r($atm->getBalance($crd2, '2222'));
+print_r($atm->getBalance($crd0, '0000'));
+
+foreach ($atm->getTransactionsHistory($crd2, '2222') as $t){
+    print $t;
+}
+
+print PHP_EOL . "CARD 0 transactions:". PHP_EOL;
+foreach ($atm->getTransactionsHistory($crd0, '0000') as $t){
     print $t;
 }
 
